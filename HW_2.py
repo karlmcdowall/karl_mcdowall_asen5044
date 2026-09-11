@@ -85,6 +85,24 @@ def main():
         t_eval=timestamps,
     )
     assert len(timestamps) == len(sol.y[1])
+
+    r_nom = np.array([x[0] for x in x_nom])
+    r_dot_nom = np.array([x[1] for x in x_nom])
+    theta_nom = np.array([x[2] for x in x_nom])
+    theta_dot_nom = np.array([x[3] for x in x_nom])
+    delta_r_rk = sol.y[0] - r_nom
+    delta_r_dot_rk = sol.y[1] - r_dot_nom
+    delta_theta_rk = sol.y[2] - theta_nom
+    delta_theta_dot_rk = sol.y[3] - theta_dot_nom
+    plot_pertubations(
+        "RK Pertubation from Nominal vs. Time",
+        timestamps,
+        delta_r_rk,
+        delta_r_dot_rk,
+        delta_theta_rk,
+        delta_theta_dot_rk,
+    )
+
     plot_total_system_state(
         "RK4 Itegrated Non-Linear Total System States vs. Time",
         timestamps,
@@ -94,23 +112,14 @@ def main():
         sol.y[3],
     )
 
-    r_nom = np.array([x[0] for x in x_nom])
-    r_dot_nom = np.array([x[1] for x in x_nom])
-    theta_nom = np.array([x[2] for x in x_nom])
-    theta_dot_nom = np.array([x[3] for x in x_nom])
-    r_rk_minus_nom = sol.y[0] - r_nom
-    r_dot_rk_minus_nom = sol.y[1] - r_dot_nom
-    theta_rk_minus_nom = sol.y[2] - theta_nom
-    theta_dot_rk_minus_nom = sol.y[3] - theta_dot_nom
     plot_pertubations(
-        "RK Pertubation from Nominal vs. Time",
+        "RK4 Pertubations minus Linearized Model Pertubations",
         timestamps,
-        r_rk_minus_nom,
-        r_dot_rk_minus_nom,
-        theta_rk_minus_nom,
-        theta_dot_rk_minus_nom,
+        delta_r_rk - delta_r,
+        delta_r_dot_rk - delta_r_dot,
+        delta_theta_rk - delta_theta,
+        delta_theta_dot_rk - delta_theta_dot,
     )
-
 
 def plot_pertubations(
     title: str,
