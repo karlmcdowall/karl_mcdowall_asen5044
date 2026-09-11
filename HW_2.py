@@ -59,7 +59,8 @@ def main():
     theta_nom_plus_delta = np.array([x[2] for x in x_nom_plus_delta_x])
     theta_dot_nom_plus_delta = np.array([x[3] for x in x_nom_plus_delta_x])
 
-    plot_expected_total_system_state(
+    plot_total_system_state(
+        "Expected Total System States vs. Time",
         timestamps,
         r_nom_plus_delta,
         r_dot_nom_plus_delta,
@@ -75,7 +76,7 @@ def main():
         t_eval=timestamps,
     )
     assert len(timestamps) == len(sol.y[1])
-    plot_rk4_total_system_state(timestamps, sol.y[0], sol.y[1], sol.y[2], sol.y[3])
+    plot_total_system_state("RK4 Interpolated Total System States vs. Time", timestamps, sol.y[0], sol.y[1], sol.y[2], sol.y[3])
 
     # plt.plot(sol.t, sol.y[3], label="x(t)")
     # plt.show()
@@ -155,7 +156,8 @@ def plot_pertubations(
     plt.show()
 
 
-def plot_expected_total_system_state(
+def plot_total_system_state(
+        title: str,
     timestamps: list[int],
     r: np.ndarray,
     r_dot: np.ndarray,
@@ -214,7 +216,7 @@ def plot_expected_total_system_state(
     )
 
     fig.legend(handles=[line1, line2, line3, line4])
-    plt.title("Expected Total System States vs. Time")
+    plt.title(title)
     plt.tight_layout()
     plt.show()
 
