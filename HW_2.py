@@ -48,9 +48,20 @@ def main():
         time += delta_t
         current_delta_x = np.matmul(STM, current_delta_x)
 
-    delta_theta_dot = [delta[3] for delta in delta_x]
+    plot_pertubations(timestamps, delta_x)
+    sol = solve_ivp(
+        scipy_system,
+        [0, 6000],
+        [r_0 + r_pertubation, r_dot_pertubation, 0.0, omega_0 + theta_dot_pertubation],
+        method="RK45",
+        t_eval=np.linspace(0, 6000, 400),
+    )
+    # plt.plot(sol.t, sol.y[3], label="x(t)")
+    # plt.show()
+
+def plot_pertubations(timestamps: list[int], delta_x:list[np.ndarray]):
     # Make plots of pertubation-states vs time
-    fig, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots(figsize=(10, 5))
     ax1.set_xlabel("Time (s)")
     r_color, r_dot_color, theta_color, theta_dot_color = "red", "blue", "orange", "green"
 
@@ -93,18 +104,6 @@ def main():
     plt.title("Pertubation States vs. Time")
     plt.tight_layout()
     plt.show()
-
-    # Make plots of total system states vs time
-
-    sol = solve_ivp(
-        scipy_system,
-        [0, 6000],
-        [r_0 + r_pertubation, r_dot_pertubation, 0.0, omega_0 + theta_dot_pertubation],
-        method="RK45",
-        t_eval=np.linspace(0, 6000, 400),
-    )
-    # plt.plot(sol.t, sol.y[3], label="x(t)")
-    # plt.show()
 
 
 def scipy_system(_t, S):
