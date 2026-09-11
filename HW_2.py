@@ -52,10 +52,20 @@ def main():
     delta_r_dot = np.array([delta[1] for delta in delta_x])
     delta_theta = np.array([delta[2] for delta in delta_x])
     delta_theta_dot = np.array([delta[3] for delta in delta_x])
-
-
     plot_pertubations(timestamps, delta_r, delta_r_dot, delta_theta, delta_theta_dot)
-    plot_expected_total_system_state(timestamps, x_nom_plus_delta_x)
+
+    r_nom_plus_delta = np.array([x[0] for x in x_nom_plus_delta_x])
+    r_dot_nom_plus_delta = np.array([x[1] for x in x_nom_plus_delta_x])
+    theta_nom_plus_delta = np.array([x[2] for x in x_nom_plus_delta_x])
+    theta_dot_nom_plus_delta = np.array([x[3] for x in x_nom_plus_delta_x])
+
+    plot_expected_total_system_state(
+        timestamps,
+        r_nom_plus_delta,
+        r_dot_nom_plus_delta,
+        theta_nom_plus_delta,
+        theta_dot_nom_plus_delta,
+    )
 
     sol = solve_ivp(
         scipy_system,
@@ -67,12 +77,17 @@ def main():
     assert len(timestamps) == len(sol.y[1])
     plot_rk4_total_system_state(timestamps, sol.y[0], sol.y[1], sol.y[2], sol.y[3])
 
-    
     # plt.plot(sol.t, sol.y[3], label="x(t)")
     # plt.show()
 
 
-def plot_pertubations(timestamps: list[int], delta_r: np.ndarray, delta_r_dot: np.ndarray, delta_theta: np.ndarray, delta_theta_dot: np.ndarray):
+def plot_pertubations(
+    timestamps: list[int],
+    delta_r: np.ndarray,
+    delta_r_dot: np.ndarray,
+    delta_theta: np.ndarray,
+    delta_theta_dot: np.ndarray,
+):
     # Make plots of pertubation-states vs time
     fig, ax1 = plt.subplots(figsize=(10, 5))
     ax1.set_xlabel("Time (s)")
@@ -141,7 +156,11 @@ def plot_pertubations(timestamps: list[int], delta_r: np.ndarray, delta_r_dot: n
 
 
 def plot_expected_total_system_state(
-    timestamps: list[int], x_nom_plus_delta_x: list[np.ndarray]
+    timestamps: list[int],
+    r: np.ndarray,
+    r_dot: np.ndarray,
+    theta: np.ndarray,
+    theta_dot: np.ndarray,
 ):
     # Make plots of pertubation-states vs time
     fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -153,7 +172,6 @@ def plot_expected_total_system_state(
         "green",
     )
 
-    r = [x[0] for x in x_nom_plus_delta_x]
     ax1.set_ylabel("Distance ($km$)", color=r_color)
     ax1.tick_params(axis="y", labelcolor=r_color)
     ax1.spines[["top", "right"]].set_visible(False)
@@ -161,7 +179,6 @@ def plot_expected_total_system_state(
     (line1,) = ax1.plot(timestamps, r, label=r"$r$", color=r_color, linewidth="0.5")
 
     ax2 = ax1.twinx()
-    r_dot = [x[1] for x in x_nom_plus_delta_x]
     ax2.yaxis.tick_left()
     ax2.yaxis.set_label_position("left")
     ax2.spines["left"].set_position(("axes", -0.15))
@@ -174,7 +191,6 @@ def plot_expected_total_system_state(
     )
 
     ax3 = ax1.twinx()
-    theta = [x[2] for x in x_nom_plus_delta_x]
     ax3.set_ylabel(r"Angle ($rad$)", color=theta_color)
     ax3.spines["right"].set_color(theta_color)
     ax3.spines[["top", "left"]].set_visible(False)
@@ -184,7 +200,6 @@ def plot_expected_total_system_state(
     )
 
     ax4 = ax1.twinx()
-    theta_dot = [x[3] for x in x_nom_plus_delta_x]
     ax4.set_ylabel(r"Angular Velocity ($rad/s$)", color=theta_dot_color)
     ax4.spines["right"].set_position(("axes", 1.15))
     ax4.spines["right"].set_color(theta_dot_color)
