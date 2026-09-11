@@ -53,7 +53,7 @@ def main():
     delta_theta = np.array([delta[2] for delta in delta_x])
     delta_theta_dot = np.array([delta[3] for delta in delta_x])
     plot_pertubations(
-        "Pertubation States vs. Time",
+        "Linearized Model Pertubation States vs. Time",
         timestamps,
         delta_r,
         delta_r_dot,
@@ -67,7 +67,7 @@ def main():
     theta_dot_nom_plus_delta = np.array([x[3] for x in x_nom_plus_delta_x])
 
     plot_total_system_state(
-        "Expected Total System States vs. Time",
+        "Linearized Model Expected Total System States vs. Time",
         timestamps,
         r_nom_plus_delta,
         r_dot_nom_plus_delta,
@@ -75,6 +75,8 @@ def main():
         theta_dot_nom_plus_delta,
     )
 
+    # Now calculate the total system state from the original non-linear equations,
+    # solving with the RK45 solver.
     sol = solve_ivp(
         scipy_system,
         [timestamps[0], timestamps[len(timestamps) - 1]],
@@ -84,7 +86,7 @@ def main():
     )
     assert len(timestamps) == len(sol.y[1])
     plot_total_system_state(
-        "RK4 Interpolated Total System States vs. Time",
+        "RK4 Itegrated Non-Linear Total System States vs. Time",
         timestamps,
         sol.y[0],
         sol.y[1],
