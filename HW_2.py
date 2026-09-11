@@ -76,11 +76,20 @@ def main():
         t_eval=timestamps,
     )
     assert len(timestamps) == len(sol.y[1])
-    plot_total_system_state("RK4 Interpolated Total System States vs. Time", timestamps, sol.y[0], sol.y[1], sol.y[2], sol.y[3])
+    plot_total_system_state(
+        "RK4 Interpolated Total System States vs. Time",
+        timestamps,
+        sol.y[0],
+        sol.y[1],
+        sol.y[2],
+        sol.y[3],
+    )
 
-    # plt.plot(sol.t, sol.y[3], label="x(t)")
-    # plt.show()
-
+    r_rk_minus_estimate = sol.y[0] - r_nom_plus_delta
+    r_dot_rk_minus_estimate = sol.y[1] - r_dot_nom_plus_delta
+    theta_rk_minus_estimate = sol.y[2] - theta_nom_plus_delta
+    theta_dot_rk_minus_estimate = sol.y[3] - theta_dot_nom_plus_delta
+    plot_pertubations(timestamps, r_rk_minus_estimate, r_dot_rk_minus_estimate, theta_rk_minus_estimate, theta_dot_rk_minus_estimate)
 
 def plot_pertubations(
     timestamps: list[int],
@@ -157,7 +166,7 @@ def plot_pertubations(
 
 
 def plot_total_system_state(
-        title: str,
+    title: str,
     timestamps: list[int],
     r: np.ndarray,
     r_dot: np.ndarray,
