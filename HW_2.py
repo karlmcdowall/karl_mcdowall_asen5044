@@ -181,6 +181,7 @@ def plot_pertubations(
     ax4.spines["right"].set_position(("axes", 1.15))
     ax4.spines["right"].set_color(theta_dot_color)
     ax4.spines[["top", "left"]].set_visible(False)
+    ax4.yaxis.get_offset_text().set_position((1.15, 1.0))
     ax4.tick_params(axis="y", labelcolor=theta_dot_color)
     (line4,) = ax4.plot(
         timestamps,
