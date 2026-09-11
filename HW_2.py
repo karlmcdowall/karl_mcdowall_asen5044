@@ -52,7 +52,14 @@ def main():
     delta_r_dot = np.array([delta[1] for delta in delta_x])
     delta_theta = np.array([delta[2] for delta in delta_x])
     delta_theta_dot = np.array([delta[3] for delta in delta_x])
-    plot_pertubations("Pertubation States vs. Time", timestamps, delta_r, delta_r_dot, delta_theta, delta_theta_dot)
+    plot_pertubations(
+        "Pertubation States vs. Time",
+        timestamps,
+        delta_r,
+        delta_r_dot,
+        delta_theta,
+        delta_theta_dot,
+    )
 
     r_nom_plus_delta = np.array([x[0] for x in x_nom_plus_delta_x])
     r_dot_nom_plus_delta = np.array([x[1] for x in x_nom_plus_delta_x])
@@ -76,14 +83,14 @@ def main():
         t_eval=timestamps,
     )
     assert len(timestamps) == len(sol.y[1])
-    # plot_total_system_state(
-    #     "RK4 Interpolated Total System States vs. Time",
-    #     timestamps,
-    #     sol.y[0],
-    #     sol.y[1],
-    #     sol.y[2],
-    #     sol.y[3],
-    # )
+    plot_total_system_state(
+        "RK4 Interpolated Total System States vs. Time",
+        timestamps,
+        sol.y[0],
+        sol.y[1],
+        sol.y[2],
+        sol.y[3],
+    )
 
     r_nom = np.array([x[0] for x in x_nom])
     r_dot_nom = np.array([x[1] for x in x_nom])
@@ -93,10 +100,18 @@ def main():
     r_dot_rk_minus_nom = sol.y[1] - r_dot_nom
     theta_rk_minus_nom = sol.y[2] - theta_nom
     theta_dot_rk_minus_nom = sol.y[3] - theta_dot_nom
-    plot_pertubations("RK Pertubation from Nominal vs. Time", timestamps, r_rk_minus_nom, r_dot_rk_minus_nom, theta_rk_minus_nom, theta_dot_rk_minus_nom)
+    plot_pertubations(
+        "RK Pertubation from Nominal vs. Time",
+        timestamps,
+        r_rk_minus_nom,
+        r_dot_rk_minus_nom,
+        theta_rk_minus_nom,
+        theta_dot_rk_minus_nom,
+    )
+
 
 def plot_pertubations(
-        title: str,
+    title: str,
     timestamps: list[int],
     delta_r: np.ndarray,
     delta_r_dot: np.ndarray,
