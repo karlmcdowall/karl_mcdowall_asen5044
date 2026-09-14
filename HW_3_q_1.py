@@ -114,6 +114,7 @@ for k in range(0, 100):
     X_states.append(x_k_plus_1)
     Y_predictions.append(y_k_plus_1)
     timestamps.append(0.05 * k+1)
+    previous_x = x_k_plus_1
 
 Y_1 = []
 Y_2 = []
