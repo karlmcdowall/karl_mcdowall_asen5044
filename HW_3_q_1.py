@@ -1,14 +1,16 @@
 from scipy.io import loadmat
 from scipy.linalg import expm
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 # From CT solution, import A and B, matricies
 A = np.array([[0, 1, 0, 0], [-2, 0, 1, 0], [0, 0, 0, 1], [1, 0, -2, 0]])
 B = np.array([[0, 0], [-1, 0], [0, 0], [1, 1]])
 
 # Construct "A-hat" matrix
-A_B = np.append(A, B, axis=1)
-A_hat = np.append(A_B, np.zeros((2, 6)), axis=0)
+A_B = np.concatenate((A, B), axis=1)
+A_hat = np.concatenate((A_B, np.zeros((2, 6))), axis=0)
 
 delta_t = 0.05
 # Now calulate the e^(A_hat * delta_t)
@@ -51,31 +53,88 @@ HF = np.matmul(H, F)
 HFF = np.matmul(HF, F)
 HFFF = np.matmul(HFF, F)
 O = np.append(np.append(np.append(H, HF, axis=0), HFF, axis=0), HFFF, axis=0)
-O_transpose_O = np.matmul(np.transpose(O), O)
+O_transpose_O = np.matmul(O.T, O)
 print(f"Rank of Gram Matrix (and therefore rank of O) is {np.linalg.matrix_rank(O_transpose_O)}, which is the same as 'n', therefore system is observable.\n\n")
 
 print("Question 1.(c)")
+print("See hand-written derivation for this question.\n\n")
+
+print("Question 1.(d)")
 print("Since data provided in log file goes from y(1) to y(100), first calculate x(1)...")
 data = loadmat("hw3problem1data.mat")
+# See written explanation of this derivation.
 # "Udata" goes from u(0) to u(100)
 # "Ydata" goes from y(1) to y(100)
 u = np.array(data["Udata"])
 y = np.array(data["Ydata"])
 
-print(y)
-y1 = np.array(y[0])
-print("********")
-print(y1)
-print(y1.T)
-y2 = np.transpose(y[1])
-y3 = np.transpose(y[2])
-y4 = np.transpose(y[3])
+y1 = np.array([y[0]]).T
+y2 = np.array([y[1]]).T
+y3 = np.array([y[2]]).T
+y4 = np.array([y[3]]).T
 
-u1 = np.transpose(u[1, :])
-u2 = np.transpose(u[2, :])
-u3 = np.transpose(u[3, :])
-u4 = np.transpose(u[4, :])
+u1 = np.array([u[1, :]]).T
+u2 = np.array([u[2, :]]).T
+u3 = np.array([u[3, :]]).T
+u4 = np.array([u[4, :]]).T
 
+Gu1 = np.matmul(G, u1)
+Gu2 = np.matmul(G, u2)
+Gu3 = np.matmul(G, u3)
+Gu4 = np.matmul(G, u4)
+FGu1 = np.matmul(F, Gu1)
+FGu2 = np.matmul(F, Gu2)
+FFGu1 = np.matmul(F, FGu1)
 # Build the Y matrix...
-Y = np.append(y1, y2 - np.matmul(H, np.matmul(G, u1)), axis = 0)
-print(Y)
+Y = np.concatenate((y1, y2 - np.matmul(H, Gu1), y3- np.matmul(H, Gu2 - FGu1), y4 - np.matmul(H, Gu3- FGu2- FFGu1)), axis=0)
+O_transpose_O_inverse = np.linalg.inv(O_transpose_O)
+
+x1 = np.matmul(np.matmul(O_transpose_O_inverse, O.T), Y)
+print("System state at k=1 is x(k=1):")
+print(x1)
+print("\nNow calculate x(k=0) using x(0) = F_inv * (x(1) - Gu(0)):")
+u0 = np.array([u[0, :]]).T
+Gu0 = np.matmul(G, u0)
+F_inverse = np.linalg.inv(F)
+x0 = np.matmul(F_inverse, x1 - Gu0)
+print("x(k=0) =")
+print(x0)
+
+# Now generate predictions for the rest of the system states from t = 0 to t = 5.
+X_states = [x0]
+Y_predictions = []
+timestamps = []
+previous_x = x0
+for k in range(0, 100):
+    # Timestamp lags, i.e. the zoh value for u is the value of u(t) at k, not k+1
+    current_timestamp = 0.05 * k
+    zoh_u = np.array([[np.sin(current_timestamp)], [0.1 * np.cos(current_timestamp)]])
+    x_k_plus_1 = np.matmul(F, previous_x) + np.matmul(G, zoh_u)
+    y_k_plus_1 = np.matmul(H, x_k_plus_1)
+    X_states.append(x_k_plus_1)
+    Y_predictions.append(y_k_plus_1)
+    timestamps.append(0.05 * k+1)
+
+Y_1 = []
+Y_2 = []
+for y_prediction in Y_predictions:
+    print (y_prediction.T)
+    Y_1.append((y_prediction.T)[0, 0])
+    Y_2.append((y_prediction.T)[0, 1])
+
+YY_1 = []
+YY_2 = []
+for y_val in y:
+    print(y_val)
+    YY_1.append(y_val[0])
+    YY_2.append(y_val[1])
+
+plt.plot(timestamps, Y_1, label="Y1", color='red')
+plt.plot(timestamps, Y_2, label="Y2", color='green')
+plt.plot(timestamps, YY_1, label="YY1", color='red')
+plt.plot(timestamps, YY_2, label="YY2", color='green')
+# plt.title("State Vector Components vs Time")
+plt.xlabel("Time (s)")
+plt.ylabel("Pertubation (rad/s)")
+plt.legend()
+plt.show()
