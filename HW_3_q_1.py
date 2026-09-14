@@ -119,14 +119,12 @@ for k in range(0, 100):
 Y_1 = []
 Y_2 = []
 for y_prediction in Y_predictions:
-    print (y_prediction.T)
     Y_1.append((y_prediction.T)[0, 0])
     Y_2.append((y_prediction.T)[0, 1])
 
 YY_1 = []
 YY_2 = []
 for y_val in y:
-    print(y_val)
     YY_1.append(y_val[0])
     YY_2.append(y_val[1])
 
