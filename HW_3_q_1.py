@@ -147,7 +147,7 @@ for k in range(0, 100):
 
 Y_1 = []
 Y_2 = []
-for y_prediction in Y_predictions:
+for y_prediction in y_original:
     Y_1.append((y_prediction.T)[0, 0])
     Y_2.append((y_prediction.T)[0, 1])
 
