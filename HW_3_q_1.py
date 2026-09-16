@@ -76,8 +76,7 @@ print(f"len(y) = {len(y)}, len(u) = {len(u)}")
 
 big_daddy = np.zeros((200, 200))
 for i in range (0, 100):
-    F_to_the_i = np.linalg.matrix_power(F, i)
-    element = H @ F_to_the_i @ G
+    element = H @ np.linalg.matrix_power(F, i) @ G
     for offset in range (0, 100-i):
         big_daddy[(i+offset)*2: (i+offset+1)*2, i*2: (i+1)*2] = element
 
@@ -138,8 +137,8 @@ for k in range(0, 100):
     # Timestamp lags, i.e. the zoh value for u is the value of u(t) at k, not k+1
     current_timestamp = 0.05 * k
     zoh_u = np.array([[np.sin(current_timestamp)], [0.1 * np.cos(current_timestamp)]])
-    x_k_plus_1 = np.matmul(F, previous_x) + np.matmul(G, zoh_u)
-    y_k_plus_1 = np.matmul(H, x_k_plus_1)
+    x_k_plus_1 = (F @ previous_x) + (G @ zoh_u)
+    y_k_plus_1 = (H @ x_k_plus_1)
     X_states.append(x_k_plus_1)
     Y_predictions.append(y_k_plus_1)
     timestamps.append(0.05 * (k+1))
@@ -147,22 +146,22 @@ for k in range(0, 100):
 
 Y_1 = []
 Y_2 = []
-for y_prediction in y_original:
+for y_prediction in Y_predictions:
     Y_1.append((y_prediction.T)[0, 0])
     Y_2.append((y_prediction.T)[0, 1])
 
-# YY_1 = []
-# YY_2 = []
-# for y_val in y:
-#     YY_1.append(y_val[0])
-#     YY_2.append(y_val[1])
+YY_1 = []
+YY_2 = []
+for y_val in y_original:
+    YY_1.append(y_val[0])
+    YY_2.append(y_val[1])
 
 # print(f"len(Y_1) = {len(Y_1)}, len(YY_1) = {len(YY_1)}")
 plt.plot(timestamps, Y_1, label="Y1", color='red')
 plt.plot(timestamps, Y_2, label="Y2", color='green')
-# plt.plot(timestamps, YY_1, label="YY1", color='red')
-# plt.plot(timestamps, YY_2, label="YY2", color='green')
-# plt.title("State Vector Components vs Time")
+plt.plot(timestamps, YY_1, label="YY1", color='red')
+plt.plot(timestamps, YY_2, label="YY2", color='green')
+plt.title("State Vector Components vs Time")
 plt.xlabel("Time (s)")
 plt.ylabel("Pertubation (rad/s)")
 plt.legend()
