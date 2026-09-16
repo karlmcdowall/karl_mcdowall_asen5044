@@ -49,10 +49,10 @@ print(
 # If there's an easier way to build this please let me know!!
 # From problem spec, we are given H.
 H = np.array([[1, 0, 0, 0], [0, 1, 0, -1]])
-HF = np.matmul(H, F)
-HFF = np.matmul(HF, F)
-HFFF = np.matmul(HFF, F)
-O = np.append(np.append(np.append(H, HF, axis=0), HFF, axis=0), HFFF, axis=0)
+HF = H @ F
+HFF = HF @ F
+HFFF = HFF @ F
+O = np.concatenate((H, HF, HFF, HFFF), axis=0)
 O_transpose_O = np.matmul(O.T, O)
 print(f"Rank of Gram Matrix (and therefore rank of O) is {np.linalg.matrix_rank(O_transpose_O)}, which is the same as 'n', therefore system is observable.\n\n")
 
@@ -157,13 +157,13 @@ for y_val in y_original:
     YY_2.append(y_val[1])
 
 # print(f"len(Y_1) = {len(Y_1)}, len(YY_1) = {len(YY_1)}")
-plt.plot(timestamps, Y_1, label="Y1", color='red')
-plt.plot(timestamps, Y_2, label="Y2", color='green')
-plt.plot(timestamps, YY_1, label="YY1", color='red')
-plt.plot(timestamps, YY_2, label="YY2", color='green')
-plt.title("State Vector Components vs Time")
-plt.xlabel("Time (s)")
-plt.ylabel("Pertubation (rad/s)")
+plt.plot(timestamps, Y_1, label="Y1-calculated", color='red')
+plt.plot(timestamps, Y_2, label="Y2-calculated", color='green')
+plt.plot(timestamps, YY_1, label="Y1-measured", color='red', linestyle="dashed")
+plt.plot(timestamps, YY_2, label="Y2-measured", color='green', linestyle="dashed")
+#plt.title("State Vector Components vs Time")
+#plt.xlabel("Time (s)")
+#plt.ylabel("Pertubation (rad/s)")
 plt.legend()
 plt.show()
 
