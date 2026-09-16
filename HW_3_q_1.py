@@ -78,7 +78,7 @@ big_daddy = np.zeros((200, 200))
 for i in range (0, 100):
     element = H @ np.linalg.matrix_power(F, i) @ G
     for offset in range (0, 100-i):
-        big_daddy[(i+offset)*2: (i+offset+1)*2, i*2: (i+1)*2] = element
+        big_daddy[(i+offset)*2: (i+offset+1)*2, offset*2: (offset+1)*2] = element
 
 LHS = y-(big_daddy @ u[0:200])
 
