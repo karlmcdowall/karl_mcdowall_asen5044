@@ -36,4 +36,3 @@ M_t_M = M.T @ M
 M_t_M_inv = np.linalg.inv(M_t_M)
 x = M_t_M_inv @ M.T @ Y
 print(f"[Lambda, Mu] = {x.T[0]}")
-
