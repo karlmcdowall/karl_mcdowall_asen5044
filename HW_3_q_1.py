@@ -142,10 +142,9 @@ for k in range(0, 100):
     timestamps.append(0.05 * (k+1))
     previous_x = x_k_plus_1
 
-y1_prediction = []
+y1_prediction = [(y_coord.T)[0, 0] for y_coord in Y_predictions]
 y2_prediction = []
 for y_prediction in Y_predictions:
-    y1_prediction.append((y_prediction.T)[0, 0])
     y2_prediction.append((y_prediction.T)[0, 1])
 
 y1_original = []
