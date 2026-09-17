@@ -20,7 +20,7 @@ e_A_hat_delta_t = expm(a_hat_delta_t)
 # expm(a_hat_delta_t) gives the F and G matricies of the DT LTI SS model
 # expm(a_hat_delta_t) = |F, G|
 #                       |0, 0|
-# Pick of the parts and output the
+# Pick off the relevant parts...
 F = e_A_hat_delta_t[0:4, 0:4]
 G = e_A_hat_delta_t[0:4, 4:6]
 print("Question 1.(a)")
@@ -46,21 +46,19 @@ print("       |HF^3|")
 print(
     "is full-column rank. To confirm this, look at rank of Gram Matrix (O-transpose * O)"
 )
-# If there's an easier way to build this please let me know!!
 # From problem spec, we are given H.
 H = np.array([[1, 0, 0, 0], [0, 1, 0, -1]])
 HF = H @ F
 HFF = HF @ F
 HFFF = HFF @ F
 O = np.concatenate((H, HF, HFF, HFFF), axis=0)
-O_transpose_O = np.matmul(O.T, O)
+O_transpose_O = O.T @ O
 print(f"Rank of Gram Matrix (and therefore rank of O) is {np.linalg.matrix_rank(O_transpose_O)}, which is the same as 'n', therefore system is observable.\n\n")
 
 print("Question 1.(c)")
 print("See hand-written derivation for this question.\n\n")
 
 print("Question 1.(d)")
-print("Since data provided in log file goes from y(1) to y(100), first calculate x(1)...")
 data = loadmat("hw3problem1data.mat")
 # See written explanation of this derivation.
 # "Udata" goes from u(0) to u(100)
@@ -82,20 +80,20 @@ for i in range (0, 100):
 
 LHS = y-(big_daddy @ u[0:200])
 
-# Now construct the RHS matrix
-RHS = np.zeros((200, 4))
+# Now construct the L matrix
+L = np.zeros((200, 4))
 for i in range(0, 100):
     element = H @ np.linalg.matrix_power(F, i+1)
-    RHS[i*2: (i+1)*2, 0:5] = element
+    L[i*2: (i+1)*2, 0:5] = element
 
-RHS_T_RHS = np.matmul(RHS.T, RHS)
+RHS_T_RHS = np.matmul(L.T, L)
 
 print(RHS_T_RHS)
 RHS_T_RHS_INV = np.linalg.inv(RHS_T_RHS)
 
-x0 = RHS_T_RHS_INV @ RHS.T @ LHS 
+x0 = RHS_T_RHS_INV @ L.T @ LHS 
 
-print(f"x0 = {x0}")
+print(f"Answer: Estimated x0 = {x0}")
 # y1 = np.array([y[0]]).T
 # y2 = np.array([y[1]]).T
 # y3 = np.array([y[2]]).T
@@ -144,25 +142,25 @@ for k in range(0, 100):
     timestamps.append(0.05 * (k+1))
     previous_x = x_k_plus_1
 
-Y_1 = []
-Y_2 = []
+y1_prediction = []
+y2_prediction = []
 for y_prediction in Y_predictions:
-    Y_1.append((y_prediction.T)[0, 0])
-    Y_2.append((y_prediction.T)[0, 1])
+    y1_prediction.append((y_prediction.T)[0, 0])
+    y2_prediction.append((y_prediction.T)[0, 1])
 
-YY_1 = []
-YY_2 = []
+y1_original = []
+y2_original = []
 for y_val in y_original:
-    YY_1.append(y_val[0])
-    YY_2.append(y_val[1])
+    y1_original.append(y_val[0])
+    y2_original.append(y_val[1])
 
 # print(f"len(Y_1) = {len(Y_1)}, len(YY_1) = {len(YY_1)}")
-plt.plot(timestamps, Y_1, label="Y1-calculated", color='red')
-plt.plot(timestamps, Y_2, label="Y2-calculated", color='green')
-plt.plot(timestamps, YY_1, label="Y1-measured", color='blue', linestyle="dashed")
-plt.plot(timestamps, YY_2, label="Y2-measured", color='orange', linestyle="dashed")
+plt.plot(timestamps, y1_prediction, label="Y1-calculated", color='red')
+plt.plot(timestamps, y2_prediction, label="Y2-calculated", color='green')
+plt.plot(timestamps, y1_original, label="Y1-measured", color='blue', linestyle="dashed")
+plt.plot(timestamps, y2_original, label="Y2-measured", color='orange', linestyle="dashed")
 #plt.title("State Vector Components vs Time")
-#plt.xlabel("Time (s)")
+plt.xlabel("Time (s)")
 #plt.ylabel("Pertubation (rad/s)")
 plt.legend()
 plt.show()
