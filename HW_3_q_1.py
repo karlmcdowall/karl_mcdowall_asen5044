@@ -188,11 +188,13 @@ y2_prediction = [y[1] for y in Y_predictions]
 y1_original = [y[0] for y in y_original]
 y2_original = [y[1] for y in y_original]
 
+fig2, ax3 = plt.subplots(figsize=(10, 5))
+
 # print(f"len(Y_1) = {len(Y_1)}, len(YY_1) = {len(YY_1)}")
-plt.plot(timestamps, y1_prediction, label=r"$y_1$ (calculated)", color='red')
-plt.plot(timestamps, y2_prediction, label=r"$y_2$ (calculated)", color='green')
-plt.plot(timestamps, y1_original, label=r"Y1-measured", color='blue', linestyle="dashed")
-plt.plot(timestamps, y2_original, label="Y2-measured", color='orange', linestyle="dashed")
+ax3.plot(timestamps, y1_prediction, label=r"$y_1$ (calculated)", color='red')
+ax3.plot(timestamps, y2_prediction, label=r"$y_2$ (calculated)", color='green')
+ax3.plot(timestamps, y1_original, label=r"Y1-measured", color='blue', linestyle="dashed")
+ax3.plot(timestamps, y2_original, label="Y2-measured", color='orange', linestyle="dashed")
 #plt.title("State Vector Components vs Time")
 plt.xlabel("Time (s)")
 #plt.ylabel("Pertubation (rad/s)")
