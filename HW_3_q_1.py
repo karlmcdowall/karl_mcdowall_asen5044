@@ -3,7 +3,7 @@ from scipy.linalg import expm
 import numpy as np
 import matplotlib.pyplot as plt
 
-# From CT solution, import A and B, matricies
+# From CT solution, import A and B, matrices
 A = np.array([[0, 1, 0, 0], [-2, 0, 1, 0], [0, 0, 0, 1], [1, 0, -2, 0]])
 B = np.array([[0, 0], [-1, 0], [0, 0], [1, 1]])
 
@@ -16,7 +16,7 @@ delta_t = 0.05
 a_hat_delta_t = A_hat * delta_t
 e_A_hat_delta_t = expm(a_hat_delta_t)
 
-# expm(a_hat_delta_t) gives the F and G matricies of the DT LTI SS model
+# expm(a_hat_delta_t) gives the F and G matrices of the DT LTI SS model
 # expm(a_hat_delta_t) = |F, G|
 #                       |0, 0|
 # Pick off the relevant parts...
@@ -24,7 +24,7 @@ F = e_A_hat_delta_t[0:4, 0:4]
 G = e_A_hat_delta_t[0:4, 4:6]
 print("Question 1.(a)")
 print("DT LTI representation is in the form x(k+1) = Fx(k) + Gu(k)")
-print("Where F and G matricies are given by...\n")
+print("Where F and G matrices are given by...\n")
 print(f"F =\n{F}\n")
 print(f"G =\n{G}\n")
 
@@ -35,7 +35,7 @@ print(
 A_eigenvals = np.linalg.eigvals(A)
 largest_modulus_eigenvalue = max(map(lambda e_val: np.abs(e_val), A_eigenvals))
 print(
-    f"Largest magitude eigenvalue (Lambda_max) has modulus {largest_modulus_eigenvalue}."
+    f"Largest magnitude eigenvalue (Lambda_max) has modulus {largest_modulus_eigenvalue}."
 )
 print(
     f"Nyquist limit is given by pi/Lambda_max = {np.pi/largest_modulus_eigenvalue}. This is"
@@ -45,7 +45,7 @@ print(
 )
 
 print("Question 1.(b)")
-print("DT system is observable iff LTI Observability Matrix O, given by")
+print("DT system is observable if LTI Observability Matrix O, given by")
 print(" O =   |H   |")
 print("       |HF  |")
 print("       |HF^2|")
@@ -79,17 +79,16 @@ y_original = np.array(data["Ydata"])
 y = y_original.reshape(-1, 1)
 # Flatten U into 202*1 matrix.
 u = u_original.reshape(-1, 1)
-print(f"len(y) = {len(y)}, len(u) = {len(u)}")
 
-big_daddy = np.zeros((200, 200))
+HFG_matrix = np.zeros((200, 200))
 for i in range(0, 100):
     element = H @ np.linalg.matrix_power(F, i) @ G
     for offset in range(0, 100 - i):
-        big_daddy[
+        HFG_matrix[
             (i + offset) * 2 : (i + offset + 1) * 2, offset * 2 : (offset + 1) * 2
         ] = element
 
-LHS = y - (big_daddy @ u[0:200])
+LHS = y - (HFG_matrix @ u[0:200])
 
 # Now construct the L matrix
 L = np.zeros((200, 4))
@@ -103,7 +102,8 @@ RHS_T_RHS_INV = np.linalg.inv(RHS_T_RHS)
 
 x0 = RHS_T_RHS_INV @ L.T @ LHS
 
-print(f"Estimated x0 = {x0}")
+print("Estimated x0:")
+print(f"{x0}")
 
 # Now generate predictions for the rest of the system states from t = 0 to t = 5.
 X_states = []
