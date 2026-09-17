@@ -3,7 +3,6 @@ from scipy.linalg import expm
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 # From CT solution, import A and B, matricies
 A = np.array([[0, 1, 0, 0], [-2, 0, 1, 0], [0, 0, 0, 1], [1, 0, -2, 0]])
 B = np.array([[0, 0], [-1, 0], [0, 0], [1, 1]])
@@ -30,12 +29,20 @@ print(f"F =\n{F}\n")
 print(f"G =\n{G}\n")
 
 print("Nyquist limit can be found by looking at eigen-values of the original A matrix")
-print("Calculate eigen-values with numpy.linalg.eigvals and find the eigenvalue with the largest modulus...")
+print(
+    "Calculate eigen-values with numpy.linalg.eigvals and find the eigenvalue with the largest modulus..."
+)
 A_eigenvals = np.linalg.eigvals(A)
 largest_modulus_eigenvalue = max(map(lambda e_val: np.abs(e_val), A_eigenvals))
-print(f"Largest magitude eigenvalue (Lambda_max) has modulus {largest_modulus_eigenvalue}.")
-print(f"Nyquist limit is given by pi/Lambda_max = {np.pi/largest_modulus_eigenvalue}. This is")
-print("larger than the 0.05s sample rate given in the question, therefore no risk of aliasing.\n\n")
+print(
+    f"Largest magitude eigenvalue (Lambda_max) has modulus {largest_modulus_eigenvalue}."
+)
+print(
+    f"Nyquist limit is given by pi/Lambda_max = {np.pi/largest_modulus_eigenvalue}. This is"
+)
+print(
+    "larger than the 0.05s sample rate given in the question, therefore no risk of aliasing.\n\n"
+)
 
 print("Question 1.(b)")
 print("DT system is observable iff LTI Observability Matrix O, given by")
@@ -53,7 +60,9 @@ HFF = HF @ F
 HFFF = HFF @ F
 O = np.concatenate((H, HF, HFF, HFFF), axis=0)
 O_transpose_O = O.T @ O
-print(f"Rank of Gram Matrix (and therefore rank of O) is {np.linalg.matrix_rank(O_transpose_O)}, which is the same as 'n', therefore system is observable.\n\n")
+print(
+    f"Rank of Gram Matrix (and therefore rank of O) is {np.linalg.matrix_rank(O_transpose_O)}, which is the same as 'n', therefore system is observable.\n\n"
+)
 
 print("Question 1.(c)")
 print("See hand-written derivation for this question.\n\n")
@@ -68,62 +77,33 @@ y_original = np.array(data["Ydata"])
 
 # Flaten Y into a 200*1 matrix.
 y = y_original.reshape(-1, 1)
-# Flatten U into 202*1 matrix. 
+# Flatten U into 202*1 matrix.
 u = u_original.reshape(-1, 1)
 print(f"len(y) = {len(y)}, len(u) = {len(u)}")
 
 big_daddy = np.zeros((200, 200))
-for i in range (0, 100):
+for i in range(0, 100):
     element = H @ np.linalg.matrix_power(F, i) @ G
-    for offset in range (0, 100-i):
-        big_daddy[(i+offset)*2: (i+offset+1)*2, offset*2: (offset+1)*2] = element
+    for offset in range(0, 100 - i):
+        big_daddy[
+            (i + offset) * 2 : (i + offset + 1) * 2, offset * 2 : (offset + 1) * 2
+        ] = element
 
-LHS = y-(big_daddy @ u[0:200])
+LHS = y - (big_daddy @ u[0:200])
 
 # Now construct the L matrix
 L = np.zeros((200, 4))
 for i in range(0, 100):
-    element = H @ np.linalg.matrix_power(F, i+1)
-    L[i*2: (i+1)*2, 0:5] = element
+    element = H @ np.linalg.matrix_power(F, i + 1)
+    L[i * 2 : (i + 1) * 2, 0:5] = element
 
 RHS_T_RHS = np.matmul(L.T, L)
 
 RHS_T_RHS_INV = np.linalg.inv(RHS_T_RHS)
 
-x0 = RHS_T_RHS_INV @ L.T @ LHS 
+x0 = RHS_T_RHS_INV @ L.T @ LHS
 
 print(f"Estimated x0 = {x0}")
-# y1 = np.array([y[0]]).T
-# y2 = np.array([y[1]]).T
-# y3 = np.array([y[2]]).T
-# y4 = np.array([y[3]]).T
-
-# u1 = np.array([u[1, :]]).T
-# u2 = np.array([u[2, :]]).T
-# u3 = np.array([u[3, :]]).T
-# u4 = np.array([u[4, :]]).T
-
-# Gu1 = np.matmul(G, u1)
-# Gu2 = np.matmul(G, u2)
-# Gu3 = np.matmul(G, u3)
-# Gu4 = np.matmul(G, u4)
-# FGu1 = np.matmul(F, Gu1)
-# FGu2 = np.matmul(F, Gu2)
-# FFGu1 = np.matmul(F, FGu1)
-# # Build the Y matrix...
-# Y = np.concatenate((y1, y2 - np.matmul(H, Gu1), y3- np.matmul(H, Gu2 - FGu1), y4 - np.matmul(H, Gu3- FGu2- FFGu1)), axis=0)
-# O_transpose_O_inverse = np.linalg.inv(O_transpose_O)
-
-# x1 = np.matmul(np.matmul(O_transpose_O_inverse, O.T), Y)
-# print("System state at k=1 is x(k=1):")
-# print(x1)
-# print("\nNow calculate x(k=0) using x(0) = F_inv * (x(1) - Gu(0)):")
-# u0 = np.array([u[0, :]]).T
-# Gu0 = np.matmul(G, u0)
-# F_inverse = np.linalg.inv(F)
-# x0 = np.matmul(F_inverse, x1 - Gu0)
-# print("x(k=0) =")
-# print(x0)
 
 # Now generate predictions for the rest of the system states from t = 0 to t = 5.
 X_states = []
@@ -135,24 +115,24 @@ for k in range(0, 100):
     current_timestamp = 0.05 * k
     zoh_u = np.array([[np.sin(current_timestamp)], [0.1 * np.cos(current_timestamp)]])
     x_k_plus_1 = (F @ previous_x) + (G @ zoh_u)
-    y_k_plus_1 = (H @ x_k_plus_1)
+    y_k_plus_1 = H @ x_k_plus_1
     X_states.append(x_k_plus_1)
     Y_predictions.append(y_k_plus_1)
-    timestamps.append(0.05 * (k+1))
+    timestamps.append(0.05 * (k + 1))
     previous_x = x_k_plus_1
 
 # Plot the X-States vs time.
-x_0_values = [x[0] for x in X_states ]
-x_1_values = [x[1] for x in X_states ]
-x_2_values = [x[2] for x in X_states ]
-x_3_values = [x[3] for x in X_states ]
+x_0_values = [x[0] for x in X_states]
+x_1_values = [x[1] for x in X_states]
+x_2_values = [x[2] for x in X_states]
+x_3_values = [x[3] for x in X_states]
 
 print(f"len(x_0_values = {len(x_0_values)}, len(timestamps) = {len(timestamps)})")
 
 # Make plots of pertubation-states vs time
 # Original state vector defined as x = [q1, q1_dot, q2, q2_dot]
 fig, ax1 = plt.subplots(figsize=(10, 5))
-ax1.set_xlabel("Time (s)")
+ax1.set_xlabel("Time ($s$)")
 m_color, m_s_color = (
     "red",
     "blue",
@@ -162,8 +142,17 @@ ax1.set_ylabel("Distance ($m$)", color=m_color)
 ax1.tick_params(axis="y", labelcolor=m_color)
 ax1.spines[["top", "right"]].set_visible(False)
 ax1.spines["left"].set_color(m_color)
-(line1,) = ax1.plot(timestamps, x_0_values, label=r"$q_1$", color=m_color, linewidth="1.0")
-(line2,) = ax1.plot(timestamps, x_2_values, label=r"$q_2$", color=m_color, linewidth="1.0", linestyle=":")
+(line1,) = ax1.plot(
+    timestamps, x_0_values, label=r"$q_1$", color=m_color, linewidth="1.0"
+)
+(line2,) = ax1.plot(
+    timestamps,
+    x_2_values,
+    label=r"$q_2$",
+    color=m_color,
+    linewidth="1.0",
+    linestyle=":",
+)
 
 ax2 = ax1.twinx()
 ax2.set_ylabel(r"Speed ($m/s$)", color=m_s_color)
@@ -174,7 +163,12 @@ ax2.tick_params(axis="y", labelcolor=m_s_color)
     timestamps, x_1_values, label=r"$\dot{q_1}$", color=m_s_color, linewidth="1.0"
 )
 (line4,) = ax2.plot(
-    timestamps, x_3_values, label=r"$\dot{q_2}$", color=m_s_color, linewidth="1.0", linestyle=":"
+    timestamps,
+    x_3_values,
+    label=r"$\dot{q_2}$",
+    color=m_s_color,
+    linewidth="1.0",
+    linestyle=":",
 )
 
 fig.legend(handles=[line1, line3, line2, line4])
@@ -191,14 +185,34 @@ y2_original = [y[1] for y in y_original]
 fig2, ax3 = plt.subplots(figsize=(10, 5))
 
 # print(f"len(Y_1) = {len(Y_1)}, len(YY_1) = {len(YY_1)}")
-ax3.plot(timestamps, y1_prediction, label=r"$y_1$ (calculated)", color='red')
-ax3.plot(timestamps, y2_prediction, label=r"$y_2$ (calculated)", color='green')
-ax3.plot(timestamps, y1_original, label=r"Y1-measured", color='blue', linestyle="dashed")
-ax3.plot(timestamps, y2_original, label="Y2-measured", color='orange', linestyle="dashed")
-#plt.title("State Vector Components vs Time")
-plt.xlabel("Time (s)")
-#plt.ylabel("Pertubation (rad/s)")
+ax3.plot(
+    timestamps, y1_prediction, label=r"$y_1$ (predicted)", linewidth="2.0", color="red"
+)
+ax3.plot(
+    timestamps,
+    y2_prediction,
+    label=r"$y_2$ (predicted)",
+    linewidth="2.0",
+    color="black",
+)
+ax3.plot(
+    timestamps,
+    y1_original,
+    label=r"$y_1$ (recorded)",
+    color="blue",
+    linewidth="2.0",
+    linestyle="dashed",
+)
+ax3.plot(
+    timestamps,
+    y2_original,
+    label=r"$y_2$ (recorded)",
+    color="orange",
+    linewidth="2.0",
+    linestyle="dashed",
+)
+plt.title(r"Comparison of Recorded and Predicted Outputs ($y(k)$) vs Time")
+ax3.set_xlabel("Time ($s$)")
+ax3.set_ylabel("Distance ($m$)")
 plt.legend()
 plt.show()
-
-
