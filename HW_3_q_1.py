@@ -58,7 +58,7 @@ H = np.array([[1, 0, 0, 0], [0, 1, 0, -1]])
 HF = H @ F
 HFF = HF @ F
 HFFF = HFF @ F
-O = np.concatenate((H, HF, HFF, HFFF), axis=0)
+O = np.concatenate((H, HF), axis=0)
 O_transpose_O = O.T @ O
 print(
     f"Rank of Gram Matrix (and therefore rank of O) is {np.linalg.matrix_rank(O_transpose_O)}, which is the same as 'n', therefore system is observable.\n\n"
@@ -126,8 +126,6 @@ x_0_values = [x[0] for x in X_states]
 x_1_values = [x[1] for x in X_states]
 x_2_values = [x[2] for x in X_states]
 x_3_values = [x[3] for x in X_states]
-
-print(f"len(x_0_values = {len(x_0_values)}, len(timestamps) = {len(timestamps)})")
 
 # Make plots of pertubation-states vs time
 # Original state vector defined as x = [q1, q1_dot, q2, q2_dot]
@@ -216,3 +214,20 @@ ax3.set_xlabel("Time ($s$)")
 ax3.set_ylabel("Distance ($m$)")
 plt.legend()
 plt.show()
+
+print("\n\nQuestion 1.(e)")
+print("Find minimum number of entries (Mu) in the 'L' matrix such that it is of rank 4 (using original H matrix).")
+# We know 4 is the upper limit here based on the size of the state vector. If we
+# can't make the system observable with <= 4, then it isn't observable at all...
+L = np.empty((0, 4))
+for i in range(1, 5):
+    L = np.concatenate((L, H @ np.linalg.matrix_power(F, i)), axis = 0)
+    print(f"Mu = {i}, Rank(LT_L) = {np.linalg.matrix_rank(L.T @ L)}")
+
+print("\nNow change the sensing matrix to [[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]] and calculate the")
+print("rank of LTL for different values of Mu.")
+L = np.empty((0, 4))
+H = np.array([[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]])
+for i in range(1, 5):
+    L = np.concatenate((L, H @ np.linalg.matrix_power(F, i)), axis = 0)
+    print(f"Mu = {i}, Rank(LT_L) = {np.linalg.matrix_rank(L.T @ L)}")
