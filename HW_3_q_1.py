@@ -88,12 +88,11 @@ for i in range(0, 100):
 
 RHS_T_RHS = np.matmul(L.T, L)
 
-print(RHS_T_RHS)
 RHS_T_RHS_INV = np.linalg.inv(RHS_T_RHS)
 
 x0 = RHS_T_RHS_INV @ L.T @ LHS 
 
-print(f"Answer: Estimated x0 = {x0}")
+print(f"Estimated x0 = {x0}")
 # y1 = np.array([y[0]]).T
 # y2 = np.array([y[1]]).T
 # y3 = np.array([y[2]]).T
@@ -127,7 +126,7 @@ print(f"Answer: Estimated x0 = {x0}")
 # print(x0)
 
 # Now generate predictions for the rest of the system states from t = 0 to t = 5.
-X_states = [x0]
+X_states = []
 Y_predictions = []
 timestamps = []
 previous_x = x0
@@ -142,21 +141,57 @@ for k in range(0, 100):
     timestamps.append(0.05 * (k+1))
     previous_x = x_k_plus_1
 
-y1_prediction = [(y_coord.T)[0, 0] for y_coord in Y_predictions]
-y2_prediction = []
-for y_prediction in Y_predictions:
-    y2_prediction.append((y_prediction.T)[0, 1])
+# Plot the X-States vs time.
+x_0_values = [x[0] for x in X_states ]
+x_1_values = [x[1] for x in X_states ]
+x_2_values = [x[2] for x in X_states ]
+x_3_values = [x[3] for x in X_states ]
 
-y1_original = []
-y2_original = []
-for y_val in y_original:
-    y1_original.append(y_val[0])
-    y2_original.append(y_val[1])
+print(f"len(x_0_values = {len(x_0_values)}, len(timestamps) = {len(timestamps)})")
+
+# Make plots of pertubation-states vs time
+# Original state vector defined as x = [q1, q1_dot, q2, q2_dot]
+fig, ax1 = plt.subplots(figsize=(10, 5))
+ax1.set_xlabel("Time (s)")
+m_color, m_s_color = (
+    "red",
+    "blue",
+)
+
+ax1.set_ylabel("Distance ($m$)", color=m_color)
+ax1.tick_params(axis="y", labelcolor=m_color)
+ax1.spines[["top", "right"]].set_visible(False)
+ax1.spines["left"].set_color(m_color)
+(line1,) = ax1.plot(timestamps, x_0_values, label=r"$q_1$", color=m_color, linewidth="1.0")
+(line2,) = ax1.plot(timestamps, x_2_values, label=r"$q_2$", color=m_color, linewidth="1.0", linestyle=":")
+
+ax2 = ax1.twinx()
+ax2.set_ylabel(r"Speed ($m/s$)", color=m_s_color)
+ax2.spines["right"].set_color(m_s_color)
+ax2.spines[["top", "left"]].set_visible(False)
+ax2.tick_params(axis="y", labelcolor=m_s_color)
+(line3,) = ax2.plot(
+    timestamps, x_1_values, label=r"$\dot{q_1}$", color=m_s_color, linewidth="1.0"
+)
+(line4,) = ax2.plot(
+    timestamps, x_3_values, label=r"$\dot{q_2}$", color=m_s_color, linewidth="1.0", linestyle=":"
+)
+
+fig.legend(handles=[line1, line3, line2, line4])
+plt.title("Calculated X-States vs Time")
+plt.show()
+
+
+y1_prediction = [y[0] for y in Y_predictions]
+y2_prediction = [y[1] for y in Y_predictions]
+
+y1_original = [y[0] for y in y_original]
+y2_original = [y[1] for y in y_original]
 
 # print(f"len(Y_1) = {len(Y_1)}, len(YY_1) = {len(YY_1)}")
-plt.plot(timestamps, y1_prediction, label="Y1-calculated", color='red')
-plt.plot(timestamps, y2_prediction, label="Y2-calculated", color='green')
-plt.plot(timestamps, y1_original, label="Y1-measured", color='blue', linestyle="dashed")
+plt.plot(timestamps, y1_prediction, label=r"$y_1$ (calculated)", color='red')
+plt.plot(timestamps, y2_prediction, label=r"$y_2$ (calculated)", color='green')
+plt.plot(timestamps, y1_original, label=r"Y1-measured", color='blue', linestyle="dashed")
 plt.plot(timestamps, y2_original, label="Y2-measured", color='orange', linestyle="dashed")
 #plt.title("State Vector Components vs Time")
 plt.xlabel("Time (s)")
