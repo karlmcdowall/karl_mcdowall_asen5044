@@ -12,7 +12,7 @@ A_B = np.concatenate((A, B), axis=1)
 A_hat = np.concatenate((A_B, np.zeros((2, 6))), axis=0)
 
 delta_t = 0.05
-# Now calulate the e^(A_hat * delta_t)
+# Now calculate the e^(A_hat * delta_t)
 a_hat_delta_t = A_hat * delta_t
 e_A_hat_delta_t = expm(a_hat_delta_t)
 
