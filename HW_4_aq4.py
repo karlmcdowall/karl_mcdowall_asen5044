@@ -46,13 +46,13 @@ estimated_mean = 0
 for x_value, p_x_value in zip(x, p_x):
     estimated_mean += x_value * p_x_value * delta_x
 
-print(f"Estimated Mean: {estimated_mean}")
+print(f"Estimated Mean: {estimated_mean:.6f}")
 
 calculated_mean = 0
 for m in mixands:
     calculated_mean += ((m[1] + m[2]) / 2) * m[0]
 
-print(f"Calculated Mean: {calculated_mean}")
+print(f"Calculated Mean: {calculated_mean:.6f}")
 
 estimated_variance = 0
 for x_value, p_x_value in zip(x, p_x):
@@ -60,13 +60,13 @@ for x_value, p_x_value in zip(x, p_x):
 
 estimated_variance -= estimated_mean * estimated_mean
 
-print(f"Estimated variance = {estimated_variance}")
+print(f"Estimated variance = {estimated_variance:.6f}")
 
 calculated_variance = 0
 for m in mixands:
     calculated_variance += (m[0] / (3 * (m[2] - m[1]))) * (m[2] ** 3 - m[1] ** 3)
 calculated_variance -= calculated_mean**2
-print(f"Calculated variance = {calculated_variance}")
+print(f"Calculated variance = {calculated_variance:.6f}")
 
 
 differential_entropy = 0
@@ -75,7 +75,7 @@ for p_x_value in p_x:
         continue
     differential_entropy += -p_x_value * math.log(p_x_value) * delta_x
 
-print(f"Differential Entropy: {differential_entropy}")
+print(f"Differential Entropy: {differential_entropy:.6f}")
 
 kl_divergence = 0
 for p_x_value in p_x:
@@ -83,7 +83,7 @@ for p_x_value in p_x:
         continue
     kl_divergence += p_x_value * math.log(p_x_value / (1 / 11)) * delta_x
 
-print(f"Kullback-Leibler Divergence: {kl_divergence}")
+print(f"Kullback-Leibler Divergence: {kl_divergence:.6f}")
 
 # Use rejection sampling.
 # First find maximum value of p(x)
@@ -140,8 +140,8 @@ e_x_50000_samples = reduce(lambda acc, x: acc + x, sample_set_50000) / len(
     sample_set_50000
 )
 print(
-    f"Monte Carlo approximation of E[x] (100-sample, 1000-sample, 50000-sample)"
-    f" = ({e_x_100_samples}, {e_x_1000_samples}, {e_x_50000_samples})"
+    f"M-C approximation of E[x] (100-sample, 1000-sample, 50000-sample)"
+    f" = ({e_x_100_samples:.6f}, {e_x_1000_samples:.6f}, {e_x_50000_samples:.6f})"
 )
 
 var_x_100_samples = reduce(
@@ -154,8 +154,8 @@ var_x_50000_samples = reduce(
     lambda acc, x: acc + (x - e_x_50000_samples) ** 2, sample_set_50000
 ) / len(sample_set_50000)
 print(
-    f"Monte Carlo approximation of var(x) (100-sample, 1000-sample, 50000-sample)"
-    f" = ({var_x_100_samples}, {var_x_1000_samples}, {var_x_50000_samples})"
+    f"M-C approximation of var(x) (100-sample, 1000-sample, 50000-sample)"
+    f" = ({var_x_100_samples:.6f}, {var_x_1000_samples:.6f}, {var_x_50000_samples:.6f})"
 )
 
 de_px_100_samples = reduce(
@@ -171,8 +171,8 @@ de_px_50000_samples = reduce(
 ) / len(sample_set_50000)
 
 print(
-    f"Monte Carlo approximation of differential entropy (100-sample, 1000-sample, 50000-sample)"
-    f" = ({de_px_100_samples}, {de_px_1000_samples}, {de_px_50000_samples})"
+    f"M-C approximation of differential entropy (100-sample, 1000-sample, 50000-sample)"
+    f" = ({de_px_100_samples:.6f}, {de_px_1000_samples:.6f}, {de_px_50000_samples:.6f})"
 )
 
 kl_px_100_samples = reduce(
@@ -189,6 +189,6 @@ kl_px_50000_samples = reduce(
 ) / len(sample_set_50000)
 
 print(
-    f"Monte Carlo approximation of K-L divergence (100-sample, 1000-sample, 50000-sample)"
-    f" = ({kl_px_100_samples}, {kl_px_1000_samples}, {kl_px_50000_samples})"
+    f"M-C approximation of K-L divergence (100-sample, 1000-sample, 50000-sample)"
+    f" = ({kl_px_100_samples:.6f}, {kl_px_1000_samples:.6f}, {kl_px_50000_samples:.6f})"
 )
