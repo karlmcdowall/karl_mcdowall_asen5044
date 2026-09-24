@@ -40,7 +40,7 @@ plt.title(r"Graph of $p(x)$ vs $x$ for $x\in[-6, 8]$")
 plt.plot(x, p_x, linewidth=1.0)
 plt.show()
 
-# The following code is for quesiton part c)
+# The following code is for question part c)
 print("Question part c).")
 estimated_mean = 0
 for x_value, p_x_value in zip(x, p_x):
@@ -92,7 +92,7 @@ for p in p_x:
     maximum = max(maximum, p)
 
 
-# The following code is for quesiton part d)
+# The following code is for question part d)
 def generate_sample_set(n: int) -> list[float]:
     sample_set = list[float]()
     while len(sample_set) < n:
@@ -128,7 +128,7 @@ plt.title(r"Graph of frequencies of 50000 random samples drawn from $p(x)$")
 plt.hist(sample_set_50000, bins=1000)
 plt.show()
 
-# The following code is for quesiton part e)
+# The following code is for question part e)
 print("\n\nQuestion part e).")
 # Monte Carlo approximations
 # Expected value of X.
